@@ -1,0 +1,1 @@
+SELECT MAX(ID) FROM movies;
