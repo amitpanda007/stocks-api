@@ -2,6 +2,7 @@ import logging
 import datetime as dt
 from datetime import timedelta
 
+import requests
 from flask import request
 try:
     from flask_restplus import Resource, Api
@@ -17,18 +18,20 @@ log = logging.getLogger(__name__)
 ns = api.namespace('stocks', description='Operations related to Stocks')
 
 
-@ns.route("/<company_id>")
-class CurrentStock(Resource):
+@ns.route("/alpha/<company_id>/<days>")
+class CurrentStockNumDaysAlphaVantage(Resource):
     """
-    Get Company stocks for today
+    Get Company stocks for number of days provided
     """
 
-    def get(self, company_id):
-        data = stocks.DataReader(company_id, 'yahoo', start=dt.datetime(2021, 4, 1), end=dt.datetime(2021, 4, 1))
+    def get(self, company_id, days):
+        api_url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=BSE%3A500570&apikey=RDHWB3SUU8YDH8C2'
+        resp = requests.get(api_url)
+        return resp.json()
 
 
 @ns.route("/<company_id>/<days>")
-class CurrentStock(Resource):
+class CurrentStockNumDays(Resource):
     """
     Get Company stocks for number of days provided
     """
