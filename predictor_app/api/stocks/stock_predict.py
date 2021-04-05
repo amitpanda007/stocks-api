@@ -25,6 +25,8 @@ class CurrentStockNumDaysAlphaVantage(Resource):
     """
 
     def get(self, company_id, days):
+        # find symbol from https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=state%20bank%20of%20india&apikey=RDHWB3SUU8YDH8C2
+        # Use symbol to compute data
         api_url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=BSE%3A500570&apikey=RDHWB3SUU8YDH8C2'
         resp = requests.get(api_url)
         return resp.json()
@@ -37,6 +39,7 @@ class CurrentStockNumDays(Resource):
     """
 
     def get(self, company_id, days):
+        # quandl_api_key = 'yLkpXUMtXk-WXgkobvoo'
         today = dt.datetime.today()
         cur_year = today.year
         cur_month = today.month
