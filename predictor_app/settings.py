@@ -12,13 +12,13 @@ RESTPLUS_ERROR_404_HELP = False
 
 # SQLAlchemy settings
 SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite'
-SQLALCHEMY_DATABASE_URI_MYSQL = 'mysql+mysqldb://root:Pa55word@127.0.0.1:3306/stocks'
-#SQLALCHEMY_DATABASE_URI_MYSQL = 'mysql+mysqldb://root:Pa55word@192.168.56.101:3306/recommend'
+# SQLALCHEMY_DATABASE_URI_MYSQL = 'mysql+mysqldb://root:Pa55word@127.0.0.1:3306/stocks'
+SQLALCHEMY_DATABASE_URI_MYSQL = 'mysql+mysqldb://root:Pa55word@192.168.100.117:3306/stocks'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # MySQL settings
-# MYSQL_HOST ='192.168.56.101'
-MYSQL_HOST ='127.0.0.1'
+MYSQL_HOST ='192.168.100.117'
+# MYSQL_HOST ='127.0.0.1'
 MYSQL_DATABASE ='stocks'
 MYSQL_USER ='root'
 MYSQL_PASSWORD = 'Pa55word'
