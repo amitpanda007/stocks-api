@@ -1,6 +1,7 @@
 import logging
 import datetime as dt
 from datetime import timedelta
+import json
 
 import requests
 from flask import request
@@ -13,27 +14,62 @@ except ImportError:
 from flask_jwt_extended import create_access_token
 from predictor_app.api.restplus import api
 import pandas_datareader as stocks
-
+from predictor_app.settings import ALPHA_VANTAGE_API_KEY
 log = logging.getLogger(__name__)
 ns = api.namespace('stocks', description='Operations related to Stocks')
 
 
-@ns.route("/alpha/<company_id>/<days>")
-class CurrentStockNumDaysAlphaVantage(Resource):
-    """
-    Get Company stocks for number of days provided
-    """
+def get_stock_symbol(search_text):
+    api_url = 'https://www.alphavantage.co/query?'
+    _url = f'{api_url}function=SYMBOL_SEARCH&keywords={search_text}&apikey={ALPHA_VANTAGE_API_KEY}'
+    resp = requests.get(_url).json()
+    try:
+        stock_symbols_list = resp['bestMatches']
+        for item in stock_symbols_list:
+            if 'India' in item['4. region']:
+                # print(item)
+                return item['1. symbol'], item['2. name']
+    except KeyError:
+        print("Error happened while parsing response of stock symbol search")
+    return '',''
 
-    def get(self, company_id, days):
+
+@ns.route("/av/search/<stock_name>")
+class StockAlphaVantageSearch(Resource):
+    """
+    Get Company stocks for last 100 days with a provided stock symbol for Alpha Vantage
+    """
+    def get(self, stock_name):
         # find symbol from https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=state%20bank%20of%20india&apikey=RDHWB3SUU8YDH8C2
-        # Use symbol to compute data
-        api_url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=BSE%3A500570&apikey=RDHWB3SUU8YDH8C2'
-        resp = requests.get(api_url)
+        # stock_symbol = 'BSE:500570' This is for TTM
+        api_url = 'https://www.alphavantage.co/query?'
+        print(get_stock_symbol(stock_name))
+        stock_symbol, stock_name = get_stock_symbol(stock_name)
+        if stock_symbol == '' or stock_name == '':
+            return {'errorCode': 50001, 'message': 'Unable to find Stocks with the search name provided.'}
+
+        _url = f'{api_url}function=TIME_SERIES_DAILY&symbol={stock_symbol}&apikey={ALPHA_VANTAGE_API_KEY}'
+        resp = requests.get(_url).json()
+        resp['Meta Data']['6. Name'] = stock_name
+        return resp
+
+
+@ns.route("/av/<stock_symbol>")
+class StockAlphaVantage(Resource):
+    """
+    Get Company stocks for last 100 days with a provided stock symbol for Alpha Vantage
+    """
+    def get(self, stock_symbol):
+        # find symbol from https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=state%20bank%20of%20india&apikey=RDHWB3SUU8YDH8C2
+        # stock_symbol = 'BSE:500570' This is for TTM
+        api_url = 'https://www.alphavantage.co/query?'
+        _url = f'{api_url}function=TIME_SERIES_DAILY&symbol={stock_symbol}&apikey={ALPHA_VANTAGE_API_KEY}'
+        resp = requests.get(_url)
         return resp.json()
 
 
 @ns.route("/<company_id>/<days>")
-class CurrentStockNumDays(Resource):
+class StockNumDays(Resource):
     """
     Get Company stocks for number of days provided
     """

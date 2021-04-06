@@ -26,6 +26,9 @@ MYSQL_PASSWORD = 'Pa55word'
 # JWT setting
 JWT_SECRET_KEY = 'super-secret' # change in production
 
+# Alpha Vantage API Key
+ALPHA_VANTAGE_API_KEY = 'RDHWB3SUU8YDH8C2'
+
 
 #Celery config
 CELERY_BROKER_URL = 'redis://13.234.20.129:6379'
